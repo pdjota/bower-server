@@ -17,7 +17,13 @@ function createTable()
 }
 
 process.on('SIGTERM', function () {
-    createTable();  
+  console.log('Got sigterm');
+    createTable();
+});
+
+process.on('SIGINT', function () {
+  console.log('Got siginit');
+    createTable();
 });
 
 setTimeout(function () {
