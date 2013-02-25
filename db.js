@@ -1,5 +1,5 @@
 var pg = require('pg')
-  , connectionString = process.env.DATABASE_URL || 'postgres://localhost:5432/bower'
+  , connectionString = process.env.HEROKU_POSTGRESQL_GREEN_URL || 'postgres://localhost:5432/bower'
   , client;
 
 client = new pg.Client(connectionString);
