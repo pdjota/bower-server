@@ -1,7 +1,7 @@
 var express = require('express')
   , app = express()
   , pg = require('pg')
-  , connectionString = process.env.process.env.HEROKU_POSTGRESQL_GREEN_URL || 'postgres://localhost:5432/bower'
+  , connectionString = process.env.HEROKU_POSTGRESQL_GREEN_URL || 'postgres://localhost:5432/bower'
   , port = process.env.PORT || 4000
   , client;
 
