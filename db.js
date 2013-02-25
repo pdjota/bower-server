@@ -21,6 +21,7 @@ process.on('SIGTERM', function () {
 });
 
 setTimeout(function () {
+  console.log('Exit on timeout');
   process.exit(0);
 }, 50);
 
