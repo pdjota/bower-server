@@ -29,7 +29,7 @@ app.get('/packages/search/:name', function(req, res) {
 
   client.query("SELECT name, url FROM bower_repo WHERE name LIKE $1", [pattern], function(error, result) {
     if(result.rows.length > 0)
-      res.send(200, JSON.stringify(result.rows));
+      res.send(JSON.stringify(result.rows));
     else
       res.send(201, 'Unknown Error');
   });
@@ -56,7 +56,7 @@ app.post('/packages', function(req, res) {
       if(error)
         res.send(201, 'Unknown Error');
       else
-        res.send(200, 'New Package Registered');
+        res.send('New Package Registered');
       });
     }
 

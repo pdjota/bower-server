@@ -29,6 +29,6 @@ process.on('SIGINT', function () {
 setTimeout(function () {
   console.log('Exit on timeout');
   process.exit(0);
-}, 50);
+}, 250);
 
 process.kill(process.pid);
