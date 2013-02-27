@@ -11,9 +11,9 @@ client = new pg.Client(connectionString);
 client.connect();
 
 /* List all the Available Packages */
-app.get('/packages', function(req, res) { 
+app.get('/packages', function(req, res) {
 
-  client.query("SELECT repo_name, repo_url FROM bower_repo", function(error, result) {
+  client.query("SELECT name, url FROM bower_repo", function(error, result) {
     if(result.rows.length > 0)
       res.send(200, JSON.stringify(result.rows));
     else
@@ -27,7 +27,7 @@ app.get('/packages/search/:name', function(req, res) {
 
   var pattern = '%' + req.param('name') + '%';
 
-  client.query("SELECT repo_name, repo_url FROM bower_repo WHERE repo_name LIKE $1", [pattern], function(error, result) {
+  client.query("SELECT name, url FROM bower_repo WHERE name LIKE $1", [pattern], function(error, result) {
     if(result.rows.length > 0)
       res.send(200, JSON.stringify(result.rows));
     else
@@ -38,21 +38,21 @@ app.get('/packages/search/:name', function(req, res) {
 
 /* Add a new Package to Bower */
 app.post('/packages', function(req, res) {
-  
-  var repo_name = req.body.name;
-  var repo_url  = req.body.url;
 
-  client.query("SELECT * FROM bower_repo WHERE repo_name = $1", [repo_name], function(error, result) {
-    
+  var name = req.body.name;
+  var url  = req.body.url;
+
+  client.query("SELECT * FROM bower_repo WHERE name = $1", [name], function(error, result) {
+
     if(result.rows.length >= 1)
       res.send(406, 'Duplicate package');
 
-    else if(repo_url.substring(0,6) != 'git://')
-      res.send(400, 'Incorrect Format'); 
-    
+    else if(url.substring(0,6) != 'git://')
+      res.send(400, 'Incorrect Format');
+
     else
     {
-      client.query("INSERT INTO bower_repo(repo_name, repo_url, created_at) values($1, $2, $3)", [repo_name, repo_url, new Date()], function(error, result) {
+      client.query("INSERT INTO bower_repo(name, url, created_at) values($1, $2, $3)", [name, url, new Date()], function(error, result) {
       if(error)
         res.send(201, 'Unknown Error');
       else
