@@ -7,7 +7,7 @@ client.connect();
 
 function createTable()
 {
-  client.query("CREATE TABLE IF NOT EXISTS bower_repo(name varchar(50), url varchar(255), created_at timestamp)",
+  client.query("CREATE TABLE IF NOT EXISTS bower_repo(name varchar(50) UNIQUE, url varchar(255) UNIQUE, created_at timestamp)",
   function(err, result) {
     if(err !== null)
       console.log('Could Not Create the Database');

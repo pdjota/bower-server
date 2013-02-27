@@ -36,6 +36,19 @@ app.get('/packages/search/:name', function(req, res) {
 
 });
 
+app.get('/packages/:name', function(req, res) {
+
+  var name = req.param('name');
+
+  client.query("SELECT name, url FROM bower_repo WHERE name  $1", [name], function(error, result) {
+    if(result.rows.length > 0)
+      res.send(JSON.stringify(result.rows[0]));
+    else
+      res.send(201, 'Unknown Error');
+  });
+
+});
+
 /* Add a new Package to Bower */
 app.post('/packages', function(req, res) {
 
