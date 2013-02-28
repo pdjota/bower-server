@@ -1,6 +1,6 @@
-var pg = require('pg')
-  , connectionString = process.env.HEROKU_POSTGRESQL_GREEN_URL || 'postgres://localhost:5432/bower'
-  , client;
+var pg = require('pg');
+var connectionString = process.env.HEROKU_POSTGRESQL_GREEN_URL || 'postgres://postgres@localhost:5432/bower';
+var client;
 
 client = new pg.Client(connectionString);
 client.connect();

@@ -1,9 +1,9 @@
-var express = require('express')
-  , app = express()
-  , pg = require('pg')
-  , connectionString = process.env.HEROKU_POSTGRESQL_GREEN_URL || 'postgres://localhost:5432/bower'
-  , port = process.env.PORT || 4000
-  , client;
+var express = require('express');
+var app = express();
+var pg = require('pg');
+var connectionString = process.env.HEROKU_POSTGRESQL_GREEN_URL || 'postgres://postgres@localhost:5432/bower';
+var port = process.env.PORT || 80;
+var client;
 
 app.use(express.bodyParser());
 
@@ -15,7 +15,7 @@ app.get('/packages', function(req, res) {
 
   client.query("SELECT name, url FROM bower_repo", function(error, result) {
     if(result.rows.length > 0)
-      res.send(200, JSON.stringify(result.rows));
+      res.send(JSON.stringify(result.rows));
     else
       res.send(201, 'Unknown Error');
   });
@@ -40,7 +40,7 @@ app.get('/packages/:name', function(req, res) {
 
   var name = req.param('name');
 
-  client.query("SELECT name, url FROM bower_repo WHERE name  $1", [name], function(error, result) {
+  client.query("SELECT name, url FROM bower_repo WHERE name = $1", [name], function(error, result) {
     if(result.rows.length > 0)
       res.send(JSON.stringify(result.rows[0]));
     else
@@ -67,7 +67,7 @@ app.post('/packages', function(req, res) {
     {
       client.query("INSERT INTO bower_repo(name, url, created_at) values($1, $2, $3)", [name, url, new Date()], function(error, result) {
       if(error)
-        res.send(201, 'Unknown Error');
+        res.send(201, 'Cant insert data into table');
       else
         res.send('New Package Registered');
       });
