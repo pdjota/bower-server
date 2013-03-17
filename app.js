@@ -1,83 +1,57 @@
-var express = require('express');
-var app = express();
-var pg = require('pg');
-var connectionString = process.env.HEROKU_POSTGRESQL_GREEN_URL || 'postgres://postgres@localhost:5432/bower';
-var port = process.env.PORT || 80;
-var client;
+var restify = require('restify');
+var app = restify.createServer({ name: 'yet another package manager for bower'});
+app.use(restify.bodyParser());
 
-app.use(express.bodyParser());
+var pm = require('./packman');
 
-client = new pg.Client(connectionString);
-client.connect();
-
-/* List all the Available Packages */
-app.get('/packages', function(req, res) {
-
-  client.query("SELECT name, url FROM bower_repo", function(error, result) {
-    if(result.rows.length > 0)
-      res.send(JSON.stringify(result.rows));
-    else
-      res.send(201, 'Unknown Error');
-  });
-
-});
-
-/* Search the Package Repository */
-app.get('/packages/search/:name', function(req, res) {
-
-  var pattern = '%' + req.param('name') + '%';
-
-  client.query("SELECT name, url FROM bower_repo WHERE name LIKE $1", [pattern], function(error, result) {
-    if(result.rows.length > 0)
-      res.send(JSON.stringify(result.rows));
-    else
-      res.send(201, 'Unknown Error');
-  });
-
-});
-
-app.get('/packages/:name', function(req, res) {
-
-  var name = req.param('name');
-
-  client.query("SELECT name, url FROM bower_repo WHERE name = $1", [name], function(error, result) {
-    if(result.rows.length > 0)
-      res.send(JSON.stringify(result.rows[0]));
-    else
-      res.send(201, 'Unknown Error');
-  });
-
-});
-
-/* Add a new Package to Bower */
-app.post('/packages', function(req, res) {
-
-  var name = req.body.name;
-  var url  = req.body.url;
-
-  client.query("SELECT * FROM bower_repo WHERE name = $1", [name], function(error, result) {
-
-    if(result.rows.length >= 1)
-      res.send(406, 'Duplicate package');
-
-    else if(url.substring(0,6) != 'git://')
-      res.send(400, 'Incorrect Format');
-
-    else
-    {
-      client.query("INSERT INTO bower_repo(name, url, created_at) values($1, $2, $3)", [name, url, new Date()], function(error, result) {
-      if(error)
-        res.send(201, 'Cant insert data into table');
-      else
-        res.send('New Package Registered');
-      });
+app.get('/packages', function (req, res, next) {
+  pm.all(function (error, packages) {
+    if (error) {
+      res.status(500);
     }
-
+    if (packages.length > 0) {
+      res.send(packages);
+    }
   });
-
+});
+app.get('/packages/:name', function (req, res, next) {
+  pm.retrieve(req.params.name, function (error, pkg) {
+    if (error) {
+      res.send(400);
+      return next();
+    }
+    if (pkg) {
+      res.send(200,pkg);
+    } else {
+      res.send(404);
+    }
+  });
 });
 
+app.post('/packages', function (req, res, next) {
+  var name = req.params.name, 
+    url = req.params.url;
+  if (!name || !url) {
+    res.send(400);
+  } else {
+    pm.create(name, url, function (error, pkg) { 
+      if (error) {
+        res.send(500);
+      } else {
+        if (pkg) {
+          res.send(201);
+        } else {
+          res.send(400);
+        }
+      }
+    });
+  }
+});
 
-app.listen(port, function() {
-  console.log('Listening on:', port);
+app.get('/packages/search/:name', function (req, res, next) {
+  res.send(405);
+});
+
+app.listen(8080, function () {
+  console.log('%s, running at: %s', app.name, app.url);
 });

@@ -2,11 +2,11 @@
   "name": "BowerPackageRepo",
   "version": "0.0.1",
   "dependencies": {
-  	"express": "3.0.x"
-  , "pg": "0.8.x"
+    "restify": "2.x"
+  , "mongoose": "3.5.x"
   },
   "engines": {
-    "node": "0.8.x",
-    "npm": "1.1.x"
+    "node": "0.8.x"
+  , "npm": "1.1.x"
   }
 }

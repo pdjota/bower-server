@@ -1,18 +1,32 @@
-BOWER Server
+Yet another Bower server
 =====
 
 ### Introduction
 
-Bower Server is a Standalone Node.js/Express App that allows you to run your own custom endpoints for Bower Components.
+Bower Server is a Standalone Node.js/Restify App that allows you to run your own custom endpoints for Bower Components.
 
 
 ### Installation
 
-Bower Server is Heroku ready. You can deploy the app to Heroku, and just run the following command to create the required database tables. 
+Requires a running MongoDB instance.
 
-	heroku run db
+```npm install```
 
 
 ### Usage
 
-TBD; twitter/bower needs to accept the pull requests!	
+Run:
+```node app.js```
+
+Add a new package:
+```curl http://localhost:8080/packages -d "{\"name\":\"toto\", \"url\":\"git://tito\"}" -H "Content-Type: application/json"```
+
+Retrieve all packages:
+```curl http://localhost:8080/packages -v```
+
+Retrieve a specific package:
+```curl http://localhost:8080/packages/toto -v```
+
+Search for a package:
+```curl http://localhost:8080/packages/search/toto -v```
+Not implemente yet
